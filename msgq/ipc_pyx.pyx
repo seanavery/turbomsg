@@ -197,6 +197,15 @@ cdef class SubSocket:
       else:
         raise IpcError(endpoint)
 
+  def serve(self, Context context, string endpoint, bool check_endpoint=True):
+    r = self.socket.serve(context.context, endpoint, check_endpoint)
+
+    if r != 0:
+      if errno.errno == errno.EADDRINUSE:
+        raise MultiplePublishersError(endpoint)
+      else:
+        raise IpcError(endpoint)
+
   def setTimeout(self, int timeout):
     with nogil:
       self.socket.setTimeout(timeout)
@@ -230,6 +239,15 @@ cdef class PubSocket:
 
   def connect(self, Context context, string endpoint):
     r = self.socket.connect(context.context, endpoint)
+
+    if r != 0:
+      if errno.errno == errno.EADDRINUSE:
+        raise MultiplePublishersError(endpoint)
+      else:
+        raise IpcError(endpoint)
+
+  def request(self, Context context, string endpoint, string address=b"127.0.0.1", bool conflate=False, bool check_endpoint=True):
+    r = self.socket.request(context.context, endpoint, address, conflate, check_endpoint)
 
     if r != 0:
       if errno.errno == errno.EADDRINUSE:

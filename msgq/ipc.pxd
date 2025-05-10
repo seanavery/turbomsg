@@ -50,6 +50,7 @@ cdef extern from "msgq/ipc.h":
     @staticmethod
     SubSocket * create() nogil
     int connect(Context *, string, string, bool) nogil
+    int serve(Context *, string, bool) nogil
     Message * receive(bool) nogil
     void setTimeout(int) nogil
 
@@ -57,6 +58,7 @@ cdef extern from "msgq/ipc.h":
     @staticmethod
     PubSocket * create()
     int connect(Context *, string)
+    int request(Context *, string, string, bool, bool)
     int sendMessage(Message *)
     int send(char *, size_t)
     bool all_readers_updated()
